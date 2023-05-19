@@ -45,11 +45,17 @@ class Program
         foreach (long friendId in friendIds)
         {
             RestRequest userRequest = SetRestRequest("users.get", friendId.ToString());
-            User userInfo = GetUserInfo(client, userRequest);
+
+            User? userInfo = GetUserInfo(client, userRequest);
             Console.WriteLine($"Friend ID: {friendId}");
-            Console.WriteLine($"Имя: {userInfo.FirstName}");
-            Console.WriteLine($"Фамилия: {userInfo.LastName}");
+            if (userInfo != null)
+            {
+                Console.WriteLine($"Имя: {userInfo.FirstName}");
+                Console.WriteLine($"Фамилия: {userInfo.LastName}");
+            }
             Console.WriteLine();
+
+
         }
     }
     static void Main(string[] args)
@@ -68,11 +74,14 @@ class Program
 
                 RestRequest requestToFriend = SetRestRequest("friends.get", friendId.ToString());
                 FriendsResponse friendsToFriend = GetFriendsResponse(client, requestToFriend);
-                List<long> friendx2Ids = friendsToFriend.Response.Items;
-                Console.Clear();
-                Console.WriteLine($"Кол-во друзей у {GetUserInfo(client, SetRestRequest("users.get", friendId.ToString())).FirstName}: {friendsToFriend.Response.Count} ");
-                Thread.Sleep(1000);//Задержка, чтобы показать смену друзей (можно убрать, если наглядность понятна)
-                PrintFriends(friendx2Ids, client);
+                if (friendsToFriend != null && friendsToFriend.Response != null)
+                {
+                    List<long> friendx2Ids = friendsToFriend.Response.Items;
+                    Console.Clear();
+                    Console.WriteLine($"Кол-во друзей у {GetUserInfo(client, SetRestRequest("users.get", friendId.ToString())).FirstName}: {friendsToFriend.Response.Count} ");
+                    Thread.Sleep(1000);//Задержка, чтобы показать смену друзей (можно убрать, если наглядность понятна)
+                    PrintFriends(friendx2Ids, client);
+                }
             }
         }
 
